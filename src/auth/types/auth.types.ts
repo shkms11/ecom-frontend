@@ -66,6 +66,11 @@ export interface AuthResponse {
   };
 }
 
+export interface RefreshApiResponse {
+  success: boolean;
+  data: RefreshTokenResponse;
+}
+
 export interface RefreshTokenResponse {
   accessToken: string;
   refreshToken: string;
