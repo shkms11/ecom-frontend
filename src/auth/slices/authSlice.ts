@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"; // Remove 'type' from createSlice
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import type { AuthState, User } from "../types/auth.types";
 import { tokenService } from "../services/tokenService";
 
