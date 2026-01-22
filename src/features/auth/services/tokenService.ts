@@ -1,5 +1,5 @@
-import { STORAGE_KEYS, SESSION_KEYS } from "../constants/auth.constants";
-import type { User } from "../types/auth.types";
+import { STORAGE_KEYS, SESSION_KEYS } from "@/features/auth/constants/auth.constants";
+import type { User } from "@/features/auth/types/auth.types";
 
 class TokenService {
   // Token Management

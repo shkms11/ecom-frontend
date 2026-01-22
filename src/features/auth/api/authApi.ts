@@ -4,8 +4,8 @@ import type {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
-import { API_URL } from "../../config/api.config";
-import { AUTH_ENDPOINTS } from "../constants/auth.constants";
+import { API_URL } from "@/config/api.config";
+import { AUTH_ENDPOINTS } from "@/features/auth/constants/auth.constants";
 import type {
   AuthResponse,
   LoginCredentials,
@@ -17,10 +17,10 @@ import type {
   RefreshTokenResponse,
   EmailVerificationData,
   RefreshApiResponse,
-} from "../types/auth.types";
-import { tokenService } from "../services/tokenService";
-import { setCredentials, logout as logoutAction } from "../slices/authSlice";
-import type { RootState } from "../../app/store";
+} from "@/features/auth/types/auth.types";
+import { tokenService } from "@/features/auth/services/tokenService";
+import { setCredentials, logout as logoutAction } from "@/features/auth/slices/authSlice";
+import type { RootState } from "@/app/store";
 
 // Base query with auth token
 const baseQuery = fetchBaseQuery({

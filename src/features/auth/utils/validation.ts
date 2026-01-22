@@ -2,8 +2,8 @@ import {
   EMAIL_REGEX,
   PASSWORD_REQUIREMENTS,
   ERROR_MESSAGES,
-} from "../constants/auth.constants";
-import type { ValidationError } from "../types/auth.types";
+} from "@/features/auth/constants/auth.constants";
+import type { ValidationError } from "@/features/auth/types/auth.types";
 
 // Email Validation
 export const validateEmail = (

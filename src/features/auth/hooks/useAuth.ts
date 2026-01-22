@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
   useLoginMutation,
   useRegisterMutation,
@@ -8,14 +8,14 @@ import {
   useGetCurrentUserQuery,
   useUpdateProfileMutation,
   useChangePasswordMutation,
-} from "../api/authApi";
-import { clearError } from "../slices/authSlice";
+} from "@/features/auth/api/authApi";
+import { clearError } from "@/features/auth/slices/authSlice";
 import type {
   LoginCredentials,
   RegisterData,
   ChangePasswordData,
-  User, // Add User type import
-} from "../types/auth.types";
+  User,
+} from "@/features/auth/types/auth.types";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
