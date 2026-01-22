@@ -1,8 +1,8 @@
 import type {
   PasswordStrength,
   PasswordStrengthLevel,
-} from "@/features/auth/types/auth.types";
-import { PASSWORD_STRENGTH_CONFIG } from "@/features/auth/constants/auth.constants";
+} from "../types/auth.types";
+import { PASSWORD_STRENGTH_CONFIG } from "../constants/auth.constants";
 
 export const calculatePasswordStrength = (
   password: string,
