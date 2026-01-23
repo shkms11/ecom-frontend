@@ -11,7 +11,7 @@ import {
 import { CustomerDashboard } from "@/pages/dashboard/CustomerDashboard";
 import { SellerDashboard } from "@/pages/dashboard/SellerDashboard";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
-import { Home } from "@/components/Home";
+import Home from "@/components/Home";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 
 export const AppRoutes = () => {
@@ -25,14 +25,8 @@ export const AppRoutes = () => {
         path={ROUTE_PATHS.FORGOT_PASSWORD}
         element={<ForgotPasswordPage />}
       />
-      <Route
-        path="/reset-password/:token"
-        element={<ResetPasswordPage />}
-      />
-      <Route
-        path="/verify-email/:token"
-        element={<VerifyEmailPage />}
-      />
+      <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+      <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
 
       {/* Protected Routes */}
       <Route
@@ -73,14 +67,10 @@ export const AppRoutes = () => {
       />
 
       {/* Unauthorized */}
-      <Route
-        path={ROUTE_PATHS.UNAUTHORIZED}
-        element={<UnauthorizedPage />}
-      />
+      <Route path={ROUTE_PATHS.UNAUTHORIZED} element={<UnauthorizedPage />} />
 
       {/* 404 */}
       <Route path="*" element={<Navigate to={ROUTE_PATHS.HOME} replace />} />
     </Routes>
   );
 };
-
