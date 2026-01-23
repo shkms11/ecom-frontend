@@ -1,3 +1,4 @@
+
 # Logs
 logs
 *.log
@@ -7,25 +8,45 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node modules & build
+node_modules/
+dist/
+dist-ssr/
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.tmp
+*.temp
 
 # Environment variables
 .env.local
 .env.*.local
 
+# Testing
+coverage/
+.nyc_output/
+.vitest/
+vitest.config.ts.timestamp-*
 
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+.cypress/
 
+# Test results / Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Documentation tmp 
+src/docs/
