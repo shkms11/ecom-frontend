@@ -3,3 +3,6 @@ export { Input } from "./Input";
 export { Loader } from "./Loader";
 export { Toast } from "./Toast";
 export { PasswordInput } from "./PasswordInput";
+export { Header } from "./Header";
+export { Footer } from "./Footer";
+export { NavMenu } from "./NavMenu";
