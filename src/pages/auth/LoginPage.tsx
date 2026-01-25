@@ -1,8 +1,10 @@
-import { LoginForm } from "../../auth/components/LoginForm";
-
+import { LoginForm } from "@/features/auth/components";
+import { AuthLayout } from "@/layouts/AuthLayout";
 
 export const LoginPage = () => {
   return (
-
-  )
-n
+    <AuthLayout>
+      <LoginForm />
+    </AuthLayout>
+  );
+};
