@@ -15,10 +15,10 @@ export const Header = () => {
       const currentScrollY = window.scrollY;
 
       // Don't hide if mobile menu is open
-      if (menuOpen) {
-        setShowBar(true);
-        return;
-      }
+      // if (menuOpen) {
+      //   setShowBar(true);
+      //   return;
+      // }
 
       // Add small threshold to avoid jitter
       if (Math.abs(currentScrollY - lastScrollY.current) < 10) {
