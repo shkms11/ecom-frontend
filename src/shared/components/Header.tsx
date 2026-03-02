@@ -54,25 +54,25 @@ export const Header = () => {
         }`}
       >
         {/* Announcement Bar */}
-        <div className="bg-blue-600 text-white text-sm text-center py-2 px-4">
+        <div className="bg-orange-500 text-white text-sm text-center py-2 px-4">
           🎉 Free Shipping on orders over $50!
         </div>
 
         {/* Main Header */}
-        <header className="bg-white border-b shadow-sm">
+        <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
             {/* Left - Logo */}
             <div className="flex items-center gap-3 shrink-0">
               <button
                 onClick={() => setMenuOpen(true)}
-                className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+                className="lg:hidden p-2 rounded-md hover:bg-orange-50"
               >
                 <Menu size={22} />
               </button>
 
               <Link
                 to="/"
-                className="text-xl font-bold text-blue-600 whitespace-nowrap"
+                className="text-xl font-bold text-orange-600 hover:text-orange-700 whitespace-nowrap"
               >
                 ShopFlow
               </Link>
@@ -80,19 +80,31 @@ export const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8 font-medium text-gray-700 shrink-0">
-              <Link className="hover:text-blue-600" to="/">
+              <Link className="hover:text-orange-600 transition-colors" to="/">
                 Home
               </Link>
-              <Link className="hover:text-blue-600" to="/shop">
+              <Link
+                className="hover:text-orange-600 transition-colors"
+                to="/shop"
+              >
                 Shop
               </Link>
-              <Link className="hover:text-blue-600" to="/categories">
+              <Link
+                className="hover:text-orange-600 transition-colors"
+                to="/categories"
+              >
                 Categories
               </Link>
-              <Link className="hover:text-blue-600" to="/about">
+              <Link
+                className="hover:text-orange-600 transition-colors"
+                to="/about"
+              >
                 About
               </Link>
-              <Link className="hover:text-blue-600" to="/contact">
+              <Link
+                className="hover:text-orange-600 transition-colors"
+                to="/contact"
+              >
                 Contact
               </Link>
             </nav>
@@ -106,15 +118,18 @@ export const Header = () => {
             <div className="flex items-center gap-4 shrink-0">
               <Link
                 to="/cart"
-                className="relative p-2 hover:bg-gray-100 rounded"
+                className="relative p-2 hover:bg-orange-50 rounded transition-colors"
               >
                 <ShoppingCart size={22} />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
                   3
                 </span>
               </Link>
 
-              <Link to="/login" className="p-2 hover:bg-gray-100 rounded">
+              <Link
+                to="/login"
+                className="p-2 hover:bg-orange-50 rounded transition-colors"
+              >
                 <User size={22} />
               </Link>
             </div>
