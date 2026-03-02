@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Menu, ShoppingCart, User } from "lucide-react";
 import { NavMenu } from "@/shared/components";
+import { SearchBar } from "@/shared/components";
 
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,23 +15,14 @@ export const Header = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Don't hide if mobile menu is open
-      // if (menuOpen) {
-      //   setShowBar(true);
-      //   return;
-      // }
-
-      // Add small threshold to avoid jitter
-      if (Math.abs(currentScrollY - lastScrollY.current) < 10) {
-        return;
-      }
+      if (Math.abs(currentScrollY - lastScrollY.current) < 10) return;
 
       if (currentScrollY < 10) {
         setShowBar(true);
       } else if (currentScrollY > lastScrollY.current) {
-        setShowBar(false); // scrolling down
+        setShowBar(false);
       } else {
-        setShowBar(true); // scrolling up
+        setShowBar(true);
       }
 
       lastScrollY.current = currentScrollY;
@@ -51,11 +43,11 @@ export const Header = () => {
     return () => {
       window.removeEventListener("scroll", onScroll);
     };
-  }, [menuOpen]);
+  }, []);
 
   return (
     <>
-      {/* Header Wrapper (moves together) */}
+      {/* Header Wrapper */}
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${
           showBar ? "translate-y-0" : "-translate-y-full"
@@ -68,9 +60,9 @@ export const Header = () => {
 
         {/* Main Header */}
         <header className="bg-white border-b shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            {/* Left */}
-            <div className="flex items-center gap-3">
+          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
+            {/* Left - Logo */}
+            <div className="flex items-center gap-3 shrink-0">
               <button
                 onClick={() => setMenuOpen(true)}
                 className="lg:hidden p-2 rounded-md hover:bg-gray-100"
@@ -78,13 +70,16 @@ export const Header = () => {
                 <Menu size={22} />
               </button>
 
-              <Link to="/" className="text-xl font-bold text-blue-600">
+              <Link
+                to="/"
+                className="text-xl font-bold text-blue-600 whitespace-nowrap"
+              >
                 ShopFlow
               </Link>
             </div>
 
-            {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-8 font-medium text-gray-700">
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-8 font-medium text-gray-700 shrink-0">
               <Link className="hover:text-blue-600" to="/">
                 Home
               </Link>
@@ -102,8 +97,13 @@ export const Header = () => {
               </Link>
             </nav>
 
-            {/* Right */}
-            <div className="flex items-center gap-4">
+            {/* Search - Flexible */}
+            <div className="flex-1 min-w-0 max-w-xl">
+              <SearchBar />
+            </div>
+
+            {/* Right - Icons */}
+            <div className="flex items-center gap-4 shrink-0">
               <Link
                 to="/cart"
                 className="relative p-2 hover:bg-gray-100 rounded"
@@ -122,7 +122,7 @@ export const Header = () => {
         </header>
       </div>
 
-      {/* Push page content down */}
+      {/* Push page content down (adjust if header height changes) */}
       <div className="h-[104px]" />
 
       <NavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
