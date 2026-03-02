@@ -11,7 +11,7 @@ import {
 import { CustomerDashboard } from "@/pages/dashboard/CustomerDashboard";
 import { SellerDashboard } from "@/pages/dashboard/SellerDashboard";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
-import Home from "@/components/Home";
+import Home from "@/pages/Home";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { Layout } from "@/layouts";
 
