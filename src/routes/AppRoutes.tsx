@@ -12,6 +12,7 @@ import { CustomerDashboard } from "@/pages/dashboard/CustomerDashboard";
 import { SellerDashboard } from "@/pages/dashboard/SellerDashboard";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
 import Home from "@/pages/Home";
+import Shop from "@/pages/Shop";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { Layout } from "@/layouts";
 
@@ -22,6 +23,7 @@ export const AppRoutes = () => {
       <Route element={<Layout />}>
         {/* Public Routes */}
         <Route path={ROUTE_PATHS.HOME} element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
         <Route path={ROUTE_PATHS.LOGIN} element={<LoginPage />} />
         <Route path={ROUTE_PATHS.REGISTER} element={<RegisterPage />} />
         <Route
