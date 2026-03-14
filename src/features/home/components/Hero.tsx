@@ -1,12 +1,13 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/shared/components";
+import heroBanner from "@/assets/images/banners/shoe-hero.jpg";
 
 export const Hero = memo(() => (
   <section
     className="relative min-h-[85vh] flex items-center 
                       bg-gradient-to-br from-zinc-800 via-slate-800 to-gray-900 
-                      px-6 lg:px-16 overflow-hidden"
+                      px-6 lg:px-16 overflow-hidden select-none"
   >
     <div className="absolute inset-0 bg-grid-white/[0.03] [background-position:left_top] opacity-50" />
 
@@ -36,12 +37,13 @@ export const Hero = memo(() => (
       <div className="relative h-96 lg:h-[28rem] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
         <img
-          src="/images/shoe-hero.jpg"
+          src={heroBanner}
           alt="Elite running shoes collection - premium performance footwear"
           className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
           sizes="(max-width: 1024px) 100vw, 50vw"
           decoding="async"
+          draggable={false}
         />
       </div>
     </div>
