@@ -3,14 +3,17 @@ import { Link } from "react-router-dom";
 import { Menu, ShoppingCart, User } from "lucide-react";
 import { NavMenu } from "@/shared/components";
 import { SearchBar } from "@/shared/components";
+import { CategoriesContent } from "@/shared/components";
 
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBar, setShowBar] = useState(true);
+  const [categoriesOpen, setCategoriesOpen] = useState(false); // Desktop dropdown
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
+  // Handle scroll show/hide and auto-close categories
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -20,7 +23,9 @@ export const Header = () => {
       if (currentScrollY < 10) {
         setShowBar(true);
       } else if (currentScrollY > lastScrollY.current) {
+        // Scroll down → hide header and close categories
         setShowBar(false);
+        setCategoriesOpen(false);
       } else {
         setShowBar(true);
       }
@@ -39,10 +44,19 @@ export const Header = () => {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    return () => {
-      window.removeEventListener("scroll", onScroll);
+  // Close categories dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("#categories-dropdown")) {
+        setCategoriesOpen(false);
+      }
     };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
@@ -89,12 +103,41 @@ export const Header = () => {
               >
                 Shop
               </Link>
-              <Link
-                className="hover:text-orange-600 transition-colors"
-                to="/categories"
-              >
-                Categories
-              </Link>
+
+              {/* Categories Dropdown */}
+              <div className="relative" id="categories-dropdown">
+                <button
+                  onClick={() => setCategoriesOpen((prev) => !prev)}
+                  className="flex items-center gap-1 hover:text-orange-600 transition-colors font-semibold"
+                >
+                  Categories
+                  <svg
+                    className={`w-4 h-4 transform transition-transform duration-200 ${
+                      categoriesOpen ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Mega Menu Content */}
+                <div
+                  className={`absolute left-0 mt-2 w-[700px] bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 z-50 ${
+                    categoriesOpen && showBar ? "max-h-[800px]" : "max-h-0"
+                  }`}
+                >
+                  <CategoriesContent />
+                </div>
+              </div>
+
               <Link
                 className="hover:text-orange-600 transition-colors"
                 to="/about"
@@ -140,6 +183,7 @@ export const Header = () => {
       {/* Push page content down (adjust if header height changes) */}
       <div className="h-[104px]" />
 
+      {/* Mobile Drawer */}
       <NavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
