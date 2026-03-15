@@ -4,6 +4,7 @@ import { Menu, ShoppingCart, User } from "lucide-react";
 import { NavMenu } from "@/shared/components";
 import { SearchBar } from "@/shared/components";
 import { CategoriesContent } from "@/shared/components";
+import { AnnouncementBar } from "./AnnouncementBar";
 
 export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -68,9 +69,7 @@ export const Header = () => {
         }`}
       >
         {/* Announcement Bar */}
-        <div className="bg-orange-500 text-white text-sm text-center py-2 px-4">
-          🎉 Free Shipping on orders over $50!
-        </div>
+        <AnnouncementBar />
 
         {/* Main Header */}
         <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 shadow-sm">
