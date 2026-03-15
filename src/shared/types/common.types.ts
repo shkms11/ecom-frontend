@@ -288,14 +288,7 @@ export type LanguageCode =
   | "ja"
   | "ko"
   | "zh";
-export type CurrencyCode =
-  | "USD"
-  | "EUR"
-  | "GBP"
-  | "JPY"
-  | "CNY"
-  | "INR"
-  | "BRL";
+export type CurrencyCode = "BDT" | "USD" | "EUR";
 
 // Configuration Types
 export interface ThemeConfig {
