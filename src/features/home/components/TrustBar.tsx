@@ -1,78 +1,64 @@
 import { memo } from "react";
-import { Truck, ArrowLeftRight, Shield, Users } from "lucide-react";
+import clsx from "clsx";
 
-interface TrustItem {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  subtitle: string;
-}
+import { TRUST_ITEMS } from "../data/trustItems";
 
-const TRUST_ITEMS: TrustItem[] = [
-  {
-    icon: Truck,
-    title: "Free Shipping",
-    subtitle: "Over $100",
-  },
-  {
-    icon: ArrowLeftRight,
-    title: "30-Day",
-    subtitle: "Returns",
-  },
-  {
-    icon: Shield,
-    title: "2-Year",
-    subtitle: "Warranty",
-  },
-  {
-    icon: Users,
-    title: "50K+",
-    subtitle: "Happy Runners",
-  },
-];
-
-export const TrustBar = memo(() => (
-  <section className="py-12 lg:py-14 bg-gradient-to-b from-zinc-900/10 to-zinc-900/20 backdrop-blur-xl border-y border-zinc-800/30 shadow-2xl shadow-black/5">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-12 text-center">
-        {TRUST_ITEMS.map(
-          (
-            { icon: Icon, title, subtitle }, // ✅ Fixed: removed unused index
-          ) => (
+export const TrustBar = memo(() => {
+  return (
+    <section
+      className={clsx(
+        "py-12 lg:py-14",
+        "bg-gradient-to-b from-gray-50 to-gray-100", // simplified subtle gradient
+        "border-t border-b border-gray-200",
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-6">
+        <div
+          className={clsx(
+            "grid",
+            "grid-cols-2 sm:grid-cols-4",
+            "gap-8 lg:gap-12",
+            "text-center",
+          )}
+        >
+          {TRUST_ITEMS.map(({ icon: Icon, title, subtitle }) => (
             <div
-              key={title}
-              className="group relative flex flex-col items-center p-6 lg:p-8 rounded-3xl bg-white/60 backdrop-blur-md 
-                     border border-white/40 hover:bg-white/80 hover:shadow-2xl hover:shadow-orange-500/10 
-                     hover:-translate-y-2 hover:scale-[1.02] transition-all duration-500 origin-center 
-                     hover:border-orange-200/50 focus:outline-none focus:ring-4 focus:ring-orange-500/30"
+              key={`${title}-${subtitle}`}
+              className={clsx(
+                "group flex flex-col items-center",
+                "p-6 lg:p-8 rounded-2xl",
+                "bg-white shadow-md", // soft card shadow
+                "transition-transform duration-300",
+                "hover:-translate-y-1 hover:shadow-lg", // smooth hover
+              )}
             >
               <div
-                className="w-20 h-20 lg:w-24 lg:h-24 mb-6 bg-gradient-to-br from-orange-500/10 to-orange-600/10 
-                           rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl 
-                           group-hover:shadow-orange-500/20 group-hover:scale-110 transition-all duration-500 ring-1 
-                           ring-orange-500/20 backdrop-blur-sm"
+                className={clsx(
+                  "w-20 h-20 lg:w-24 lg:h-24 mb-6",
+                  "flex items-center justify-center rounded-xl",
+                  "bg-orange-50 text-orange-600",
+                  "transition-transform duration-300 group-hover:scale-110",
+                )}
               >
-                <Icon className="w-12 h-12 lg:w-14 lg:h-14 text-orange-600 drop-shadow-lg group-hover:scale-110 transition-all duration-300" />
+                <Icon
+                  className="w-12 h-12 lg:w-14 lg:h-14"
+                  aria-hidden="true"
+                />
               </div>
 
-              <h3 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-gray-900 via-slate-800 to-zinc-900 bg-clip-text text-transparent mb-3 px-4 tracking-tight leading-tight">
+              <h3 className="text-xl lg:text-2xl font-semibold text-gray-900 mb-2">
                 {title}
               </h3>
 
-              <p className="text-sm lg:text-base font-bold text-gray-700 uppercase tracking-widest">
+              <p className="text-sm lg:text-base text-gray-500 uppercase tracking-wide">
                 {subtitle}
               </p>
-
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-400/20 rounded-3xl 
-                           blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 
-                           scale-75 group-hover:scale-100"
-              />
             </div>
-          ),
-        )}
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-));
+    </section>
+  );
+});
 
 TrustBar.displayName = "TrustBar";
