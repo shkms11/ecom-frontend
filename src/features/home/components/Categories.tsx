@@ -27,13 +27,13 @@ export const Categories = memo(() => (
       <div className="grid sm:grid-cols-3 gap-8 mt-12">
         {CATEGORIES.map((category) => (
           <Link
-            key={category.slug} // ✅ Use slug for stable keys
+            key={category.slug}
             to={`/shop?category=${category.slug}`}
             className="group relative flex items-center justify-center h-48 lg:h-56 
                        rounded-2xl bg-white shadow-md border border-gray-200 
                        transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg
                        focus:outline-none focus:ring-4 focus:ring-orange-300"
-            title={`Shop ${category.name}`} // ✅ Accessibility
+            title={`Shop ${category.name}`}
           >
             {/* Category Name */}
             <span
