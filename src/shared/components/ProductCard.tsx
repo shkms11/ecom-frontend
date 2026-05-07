@@ -1,5 +1,5 @@
 import React from "react";
-import type { Product } from "@/shared/types/Product";
+import type { Product } from "@/features/products/types/product.types";
 import { formatCurrency } from "@/shared/utils";
 
 interface ProductCardProps {
