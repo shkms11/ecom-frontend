@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/shared/components";
-import heroBanner from "@/assets/images/banners/shoe-hero.jpg";
+import heroBanner from "@/assets/images/banners/shoeHero.jpg";
 
 export const Hero = memo(() => (
   <section

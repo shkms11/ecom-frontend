@@ -4,8 +4,6 @@ import {
   TrustBar,
   Categories,
   BestSellers,
-  Technology,
-  Features,
   Testimonials,
   Newsletter,
 } from "./index";
@@ -16,8 +14,6 @@ export const HomePage = memo(() => (
     <TrustBar />
     <Categories />
     <BestSellers />
-    <Technology />
-    <Features />
     <Testimonials />
     <Newsletter />
   </main>
