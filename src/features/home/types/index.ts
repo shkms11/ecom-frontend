@@ -1,15 +1,12 @@
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  rating: number;
-}
+import type { IconName, Option } from "@/shared/types/common.types";
 
 export interface Category {
   name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  priority?: number;
 }
-
-export type IconName = "truck" | "shield-check" | "zap";
 
 export interface Feature {
   icon: IconName;
@@ -17,44 +14,47 @@ export interface Feature {
   description: string;
 }
 
-export interface NewsletterForm {
+export interface NewsletterFormState {
   email: string;
   success: boolean;
-  error: string;
+  error: string | null;
+  loading: boolean;
+  subscribed: boolean;
 }
 
-// Icon map type (no actual components - just the type)
-export type IconComponent = React.ComponentType<{ className?: string }>;
+export interface HeroSlide {
+  title: string;
+  subtitle: string;
+  image: string;
+  ctaText: string;
+  ctaLink: string;
+}
 
-// Usage helper function (pure TS, no JSX)
-export const getIconComponent = (
-  iconName: IconName,
-): IconComponent | undefined => {
-  const iconMap: Record<IconName, IconComponent> = {
-    truck: {} as IconComponent, // Replace with actual TruckIcon
-    "shield-check": {} as IconComponent, // Replace with actual ShieldCheckIcon
-    zap: {} as IconComponent, // Replace with actual ZapIcon
-  };
-  return iconMap[iconName];
-};
+export interface Stat {
+  label: string;
+  value: string | number;
+  suffix?: string;
+}
 
-// Sample data
-export const sampleFeatures: Feature[] = [
-  {
-    icon: "truck",
-    title: "Free Shipping",
-    description: "Orders over $50 qualify for free standard shipping.",
-  },
-  {
-    icon: "shield-check",
-    title: "Secure Checkout",
-    description:
-      "Your payment information is protected with enterprise-grade security.",
-  },
-  {
-    icon: "zap",
-    title: "Fast Delivery",
-    description:
-      "Get your order within 2-3 business days anywhere in the country.",
-  },
-];
+export interface Testimonial {
+  id: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  content: string;
+  role: string;
+}
+
+export interface CallToAction {
+  title: string;
+  description: string;
+  primaryButton: Option<string>;
+  secondaryButton?: Option<string>;
+}
+
+export interface HomePageMeta {
+  title: string;
+  description: string;
+  keywords: string[];
+  heroImage: string;
+}
