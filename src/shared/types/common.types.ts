@@ -1,7 +1,6 @@
-// 🆕 Add these at the TOP (before other types)
 export type ID = string | number;
 
-export type IconName = "truck" | "shield-check" | "zap" | string; // Extensible
+export type IconName = "truck" | "shield-check" | "zap" | string;
 
 export type IconComponent = React.ComponentType<{ className?: string }>;
 
@@ -33,7 +32,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// API Response Types
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -168,6 +166,3 @@ export interface CartSummary {
 export type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
 
 export type CurrencyCode = "BDT" | "USD" | "EUR";
-
-// Keep all your other excellent types unchanged...
-// (TableColumn, ModalProps, Statistics, DeepPartial, etc.)
