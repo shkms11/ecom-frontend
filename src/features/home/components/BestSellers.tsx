@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { ProductCard } from "@/shared/components";
+import { ProductCard } from "@/features/products";
 import { BEST_SELLER_ITEMS } from "@/features/products/data/mockBestSellers";
 
 export const BestSellers = memo(() => {

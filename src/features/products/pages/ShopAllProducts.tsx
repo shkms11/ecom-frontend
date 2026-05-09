@@ -1,7 +1,7 @@
 import { memo, useState, useCallback, useMemo, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom"; // Assuming React Router
 import { ChevronLeft, ChevronRight, Funnel, ArrowLeft } from "lucide-react";
-import { ProductCard } from "@/shared/components";
+import { ProductCard } from "../components/ProductCard";
 import type { Product } from "@/features/products/types/product.types";
 import { SHOP_PRODUCTS } from "@/features/products/data/mockProducts";
 import ProductDetailPage from "./ProductDetailsPage";
