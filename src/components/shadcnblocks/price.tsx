@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext } from "react";
 
-import { cn } from "src/lib/utils";
+import { cn } from "@/lib/utils";
 
 const PriceContext = createContext<{ onSale?: boolean }>({ onSale: false });
 export const usePriceContext = () => useContext(PriceContext);
