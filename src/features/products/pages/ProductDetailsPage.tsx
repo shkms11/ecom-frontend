@@ -1,10 +1,9 @@
-// src/features/products/components/ProductDetailPage.tsx
 import React, { useState } from "react";
 import type {
   Product,
   VariantOption,
 } from "@/features/products/types/product.types";
-import { ProductCard } from "@/shared/components";
+import { ProductCard } from "../components/ProductCard";
 import { SHOP_PRODUCTS } from "@/features/products/data/mockProducts";
 
 interface ProductDetailPageProps {

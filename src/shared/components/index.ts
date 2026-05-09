@@ -8,4 +8,3 @@ export { Footer } from "./Footer";
 export { NavMenu } from "./NavMenu";
 export { SearchBar } from "./SearchBar";
 export { CategoriesContent } from "./Header/CategoriesContent";
-export { ProductCard } from "./ProductCard";
