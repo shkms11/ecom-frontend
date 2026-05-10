@@ -1,79 +1,85 @@
 import React from "react";
-import type { Product } from "@/features/products/types/product.types";
+import type { ProductSummary } from "@/features/products/types/product.types";
 import { formatCurrency } from "@/shared/utils";
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 interface ProductCardProps {
-  product: Product;
-  onAddToCart?: (product: Product) => void;
+  product: ProductSummary;
+  onAddToCart?: (product: ProductSummary) => void;
+  onClick?: () => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onAddToCart,
+  onClick,
 }) => {
-  const { id, name, price, rating, image, description, category, numReviews } =
-    product;
+  const { name, price, rating, images, category, stockStatus } = product;
+
+  const formattedStockStatus = stockStatus?.replace(/_/g, " ") ?? "unknown";
 
   return (
-    <div
-      key={id}
-      className="group bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md overflow-hidden transition-shadow duration-200 flex flex-col"
+    <Card
+      onClick={onClick}
+      className="group cursor-pointer overflow-hidden transition-all hover:shadow-md"
     >
       {/* Image */}
-      <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+      <div className="relative h-48 w-full overflow-hidden bg-muted">
         <img
-          src={image ?? "/fallback-product.jpg"}
+          src={images[0] ?? "/fallback-product.jpg"}
           alt={name}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
-      {/* Body */}
-      <div className="p-4 flex-1 flex flex-col">
-        {/* Name + category */}
-        <div className="flex justify-between items-start mb-1">
-          <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
-            {name}
-          </h3>
-          {category && (
-            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-              {category}
-            </span>
-          )}
+      {/* Header */}
+      <CardHeader className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="line-clamp-1 text-base font-semibold">{name}</h3>
+
+          <Badge variant="secondary" className="text-xs">
+            {category}
+          </Badge>
         </div>
 
-        {/* Rating + reviews */}
-        <div className="flex items-center mb-2 text-sm">
+        {/* Rating */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="text-yellow-500">
             {"★".repeat(Math.floor(rating))}
             {"☆".repeat(5 - Math.floor(rating))}
           </span>
-          {numReviews != null && (
-            <span className="text-xs text-gray-500 ml-1">({numReviews})</span>
-          )}
         </div>
 
-        {/* Description */}
-        {description && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {description}
-          </p>
-        )}
+        {/* Stock */}
 
-        {/* Price + add to cart */}
-        <div className="flex justify-between items-center mt-auto">
-          <span className="text-xl font-bold text-gray-900">
-            {formatCurrency(price)}
-          </span>
+        <p className="text-xs text-muted-foreground">{formattedStockStatus}</p>
+      </CardHeader>
 
-          <button
-            onClick={() => onAddToCart?.(product)}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded text-sm flex items-center gap-1.5 transition-colors"
-          >
-            Add to cart
-          </button>
-        </div>
-      </div>
-    </div>
+      {/* Optional content area */}
+      <CardContent />
+
+      {/* Footer */}
+      <CardFooter className="flex items-center justify-between">
+        <span className="text-lg font-bold">{formatCurrency(price)}</span>
+
+        <Button
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart?.(product);
+          }}
+        >
+          Add to cart
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
