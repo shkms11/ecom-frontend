@@ -1,5 +1,5 @@
-import ShopAllProducts from "@/features/products/pages/ShopAllProducts";
+import AllProductsPage from "@/features/products/pages/AllProductsPage";
 
 export default function ShopPage() {
-  return <ShopAllProducts />;
+  return <AllProductsPage />;
 }

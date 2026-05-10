@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTE_PATHS } from "@/features/auth/constants/auth.constants";
 import { ProtectedRoute, RoleBasedRoute } from "@/features/auth/guards";
+
 import {
   LoginPage,
   RegisterPage,
@@ -8,11 +9,15 @@ import {
   ResetPasswordPage,
   VerifyEmailPage,
 } from "@/pages/auth";
+
 import { CustomerDashboard } from "@/pages/dashboard/CustomerDashboard";
 import { SellerDashboard } from "@/pages/dashboard/SellerDashboard";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
+
 import Home from "@/pages/Home";
 import Shop from "@/pages/Shop";
+import ProductDetailPage from "@/features/products/pages/ProductDetailsPage";
+
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { Layout } from "@/layouts";
 
@@ -23,7 +28,12 @@ export const AppRoutes = () => {
       <Route element={<Layout />}>
         {/* Public Routes */}
         <Route path={ROUTE_PATHS.HOME} element={<Home />} />
+
+        {/* Shop */}
         <Route path="/shop" element={<Shop />} />
+        <Route path="/shop/:productId" element={<ProductDetailPage />} />
+
+        {/* Auth */}
         <Route path={ROUTE_PATHS.LOGIN} element={<LoginPage />} />
         <Route path={ROUTE_PATHS.REGISTER} element={<RegisterPage />} />
         <Route
@@ -33,7 +43,7 @@ export const AppRoutes = () => {
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
 
-        {/* Protected Routes */}
+        {/* Protected redirect */}
         <Route
           path={ROUTE_PATHS.DASHBOARD}
           element={
@@ -43,7 +53,7 @@ export const AppRoutes = () => {
           }
         />
 
-        {/* Role-Based Routes */}
+        {/* Role based */}
         <Route
           path={ROUTE_PATHS.CUSTOMER_DASHBOARD}
           element={
