@@ -1,8 +1,36 @@
+import type React from "react";
+
+/* ---------------------------------- */
+/* Primitive shared types */
+/* ---------------------------------- */
+
 export type ID = string | number;
+
+export type LoadingState = "idle" | "pending" | "succeeded" | "failed";
+
+export type SortOrder = "asc" | "desc";
+
+export type ToastType = "success" | "error" | "warning" | "info";
+
+/* ---------------------------------- */
+/* UI shared types */
+/* ---------------------------------- */
 
 export type IconName = "truck" | "shield-check" | "zap" | string;
 
-export type IconComponent = React.ComponentType<{ className?: string }>;
+export type IconComponent = React.ComponentType<{
+  className?: string;
+}>;
+
+export interface Option<T = string> {
+  label: string;
+  value: T;
+  disabled?: boolean;
+}
+
+/* ---------------------------------- */
+/* Metadata */
+/* ---------------------------------- */
 
 export interface Meta {
   id?: ID;
@@ -13,24 +41,9 @@ export interface Meta {
   version?: number;
 }
 
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  message: string;
-  data: T;
-  timestamp?: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}
+/* ---------------------------------- */
+/* API response types */
+/* ---------------------------------- */
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -41,6 +54,7 @@ export interface ApiResponse<T = unknown> {
 
 export interface PaginatedResponse<T> {
   data: T[];
+
   pagination: {
     page: number;
     limit: number;
@@ -65,25 +79,9 @@ export interface FieldError {
   value?: string | number | boolean;
 }
 
-export interface ProductSummary {
-  id: ID;
-  name: string;
-  price: number;
-  image: string;
-  rating: number;
-  category: string;
-  inStock: boolean;
-}
-
-export interface CartItemResponse {
-  id: ID;
-  productId: ID;
-  quantity: number;
-  price: number;
-  total: number;
-}
-
-export type LoadingState = "idle" | "pending" | "succeeded" | "failed";
+/* ---------------------------------- */
+/* Async state */
+/* ---------------------------------- */
 
 export interface AsyncState<T = unknown> {
   loading: LoadingState;
@@ -91,7 +89,10 @@ export interface AsyncState<T = unknown> {
   data: T | null;
 }
 
-export type SortOrder = "asc" | "desc";
+/* ---------------------------------- */
+/* Query/filter types */
+/* ---------------------------------- */
+
 export type FilterOperator =
   | "eq"
   | "ne"
@@ -121,21 +122,25 @@ export interface QueryParams {
   search?: string;
   filters?: Filter[];
   sort?: Sort[];
+
   category?: string;
   price_min?: number;
   price_max?: number;
 }
 
-export interface Option<T = string> {
-  label: string;
-  value: T;
-  disabled?: boolean;
-}
-
-export type ToastType = "success" | "error" | "warning" | "info";
+/* ---------------------------------- */
+/* Product-related shared enums */
+/* ---------------------------------- */
 
 export type ProductBadge = "Best Seller" | "Sale" | "New" | "Premium" | string;
-export type Rating = 0 | 1 | 2 | 3 | 4 | 5;
+
+export type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
+
+export type Rating = number;
+
+/* ---------------------------------- */
+/* Form state */
+/* ---------------------------------- */
 
 export interface FormFieldState {
   value: string;
@@ -150,19 +155,20 @@ export interface FormState<
   values: T;
   errors: Partial<Record<keyof T, string>>;
   touched: Partial<Record<keyof T, boolean>>;
+
   isSubmitting: boolean;
   isValid: boolean;
 }
+
+/* ---------------------------------- */
+/* Cart shared */
+/* ---------------------------------- */
 
 export interface CartSummary {
   items: number;
   subtotal: number;
   discount: number;
   tax: number;
-  total: number;
   shipping: number;
+  total: number;
 }
-
-export type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
-
-export type CurrencyCode = "BDT" | "USD" | "EUR";
