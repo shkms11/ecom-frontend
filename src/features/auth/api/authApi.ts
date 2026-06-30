@@ -1,11 +1,14 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type {
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-} from "@reduxjs/toolkit/query";
-import { API_URL } from "@/config/api.config";
+import { baseApi } from "@/api/baseApi";
+
+import {
+  setCredentials,
+  logout as logoutAction,
+} from "@/features/auth/slices/authSlice";
+
+import { tokenService } from "@/features/auth/services/tokenService";
+
 import { AUTH_ENDPOINTS } from "@/features/auth/constants/auth.constants";
+
 import type {
   AuthResponse,
   LoginCredentials,
@@ -16,338 +19,193 @@ import type {
   User,
   RefreshTokenResponse,
   EmailVerificationData,
-  RefreshApiResponse,
 } from "@/features/auth/types/auth.types";
-import { tokenService } from "@/features/auth/services/tokenService";
-import { setCredentials, logout as logoutAction } from "@/features/auth/slices/authSlice";
-import type { RootState } from "@/app/store";
 
-// Base query with auth token
-const baseQuery = fetchBaseQuery({
-  baseUrl: API_URL,
-  prepareHeaders: (headers, { getState }) => {
-    const token =
-      (getState() as RootState).auth.accessToken ||
-      tokenService.getAccessToken();
-
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
-
-    const csrfToken = tokenService.getCSRFToken();
-    if (csrfToken) {
-      headers.set("X-CSRF-Token", csrfToken);
-    }
-
-    return headers;
-  },
-});
-
-// Base query with automatic token refresh
-const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-
-  // If unauthorized, try to refresh token
-  if (result.error && result.error.status === 401) {
-    const refreshToken = tokenService.getRefreshToken();
-
-    if (refreshToken) {
-      // Try to refresh token
-      const refreshResult = await baseQuery(
-        {
-          url: AUTH_ENDPOINTS.REFRESH_TOKEN,
-          method: "POST",
-          body: { refreshToken },
-        },
-        api,
-        extraOptions,
-      );
-
-      if (refreshResult.data) {
-        const refreshResponse = refreshResult.data as RefreshApiResponse;
-        const { accessToken, refreshToken: newRefreshToken } =
-          refreshResponse.data;
-
-        // Update tokens in storage
-        tokenService.setTokens(accessToken, newRefreshToken);
-
-        // Update Redux state
-        const user = tokenService.getUser();
-        if (user) {
-          api.dispatch(
-            setCredentials({
-              user,
-              accessToken,
-              refreshToken: newRefreshToken,
-            }),
-          );
-        }
-
-        // Retry the original query
-        result = await baseQuery(args, api, extraOptions);
-      } else {
-        // Refresh failed, logout user
-        api.dispatch(logoutAction());
-        tokenService.clearTokens();
-        window.location.href = "/login";
-      }
-    } else {
-      // No refresh token, logout user
-      api.dispatch(logoutAction());
-      tokenService.clearTokens();
-      window.location.href = "/login";
-    }
-  }
-
-  return result;
-};
-
-export const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Auth"],
+export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Login
+    // ---------------- LOGIN ----------------
+
     login: builder.mutation<AuthResponse, LoginCredentials>({
       query: (credentials) => ({
         url: AUTH_ENDPOINTS.LOGIN,
         method: "POST",
         body: credentials,
       }),
+
       invalidatesTags: ["User", "Auth"],
+
       async onQueryStarted(credentials, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
+
           const { user, accessToken, refreshToken } = data.data;
 
-          // Save to storage
           tokenService.setTokens(
             accessToken,
             refreshToken,
-            credentials.rememberMe || false,
+            credentials.rememberMe ?? false,
           );
-          tokenService.setUser(user, credentials.rememberMe || false);
 
-          // Update Redux state
-          dispatch(setCredentials({ user, accessToken, refreshToken }));
-        } catch (error) {
-          console.error("Login failed:", error);
+          tokenService.setUser(user, credentials.rememberMe ?? false);
+
+          dispatch(
+            setCredentials({
+              user,
+              accessToken,
+              refreshToken,
+            }),
+          );
+        } catch (err) {
+          console.error(err);
         }
       },
     }),
 
-    // Register
+    // ---------------- REGISTER ----------------
+
     register: builder.mutation<AuthResponse, RegisterData>({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.REGISTER,
         method: "POST",
-        body: data,
+        body,
       }),
+
       invalidatesTags: ["User", "Auth"],
+
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
+
           const { user, accessToken, refreshToken } = data.data;
 
-          // Save to storage
           tokenService.setTokens(accessToken, refreshToken);
+
           tokenService.setUser(user);
 
-          // Update Redux state
-          dispatch(setCredentials({ user, accessToken, refreshToken }));
-        } catch (error) {
-          console.error("Registration failed:", error);
+          dispatch(
+            setCredentials({
+              user,
+              accessToken,
+              refreshToken,
+            }),
+          );
+        } catch (err) {
+          console.error(err);
         }
       },
     }),
 
-    // Logout
+    // ---------------- LOGOUT ----------------
+
     logout: builder.mutation<void, void>({
       query: () => ({
         url: AUTH_ENDPOINTS.LOGOUT,
         method: "POST",
       }),
+
       invalidatesTags: ["User", "Auth"],
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          console.error("Logout request failed:", error);
-        } finally {
-          // Clear storage and Redux state regardless of API response
-          tokenService.clearTokens();
-          dispatch(logoutAction());
-        }
+
+      async onQueryStarted(_, { dispatch }) {
+        tokenService.clearTokens();
+        dispatch(logoutAction());
       },
     }),
 
-    // Get Current User
+    // ---------------- CURRENT USER ----------------
+
     getCurrentUser: builder.query<User, void>({
       query: () => AUTH_ENDPOINTS.ME,
+
       providesTags: ["User"],
+
       transformResponse: (response: { success: boolean; data: User }) =>
         response.data,
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          tokenService.updateUser(data);
-
-          // Update Redux state with fresh user data
-          const state = tokenService.getAccessToken();
-          if (state) {
-            dispatch(
-              setCredentials({
-                user: data,
-                accessToken: state,
-                refreshToken: tokenService.getRefreshToken() || undefined,
-              }),
-            );
-          }
-        } catch (error) {
-          console.error("Failed to get user:", error);
-        }
-      },
     }),
 
-    // Update Profile
+    // ---------------- UPDATE PROFILE ----------------
+
     updateProfile: builder.mutation<User, Partial<User>>({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.UPDATE_PROFILE,
         method: "PATCH",
-        body: data,
+        body,
       }),
+
       invalidatesTags: ["User"],
+
       transformResponse: (response: { success: boolean; data: User }) =>
         response.data,
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          tokenService.updateUser(data);
-
-          // Update Redux state
-          const accessToken = tokenService.getAccessToken();
-          if (accessToken) {
-            dispatch(
-              setCredentials({
-                user: data,
-                accessToken,
-                refreshToken: tokenService.getRefreshToken() || undefined,
-              }),
-            );
-          }
-        } catch (error) {
-          console.error("Failed to update profile:", error);
-        }
-      },
     }),
 
-    // Forgot Password
+    // ---------------- FORGOT PASSWORD ----------------
+
     forgotPassword: builder.mutation<
       { message: string },
       ForgotPasswordRequest
     >({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.FORGOT_PASSWORD,
         method: "POST",
-        body: data,
-      }),
-      transformResponse: (response: { success: boolean; message: string }) => ({
-        message: response.message,
+        body,
       }),
     }),
 
-    // Reset Password
+    // ---------------- RESET PASSWORD ----------------
+
     resetPassword: builder.mutation<{ message: string }, ResetPasswordData>({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.RESET_PASSWORD,
         method: "POST",
-        body: data,
-      }),
-      transformResponse: (response: { success: boolean; message: string }) => ({
-        message: response.message,
+        body,
       }),
     }),
 
-    // Change Password
+    // ---------------- CHANGE PASSWORD ----------------
+
     changePassword: builder.mutation<{ message: string }, ChangePasswordData>({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.CHANGE_PASSWORD,
         method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["Auth"],
-      transformResponse: (response: { success: boolean; message: string }) => ({
-        message: response.message,
+        body,
       }),
     }),
 
-    // Verify Email
+    // ---------------- VERIFY EMAIL ----------------
+
     verifyEmail: builder.mutation<{ message: string }, EmailVerificationData>({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.VERIFY_EMAIL,
         method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["User"],
-      transformResponse: (response: { success: boolean; message: string }) => ({
-        message: response.message,
+        body,
       }),
     }),
 
-    // Resend Verification Email
+    // ---------------- RESEND EMAIL ----------------
+
     resendVerificationEmail: builder.mutation<{ message: string }, void>({
       query: () => ({
         url: AUTH_ENDPOINTS.RESEND_VERIFICATION,
         method: "POST",
       }),
-      transformResponse: (response: { success: boolean; message: string }) => ({
-        message: response.message,
-      }),
     }),
 
-    // Refresh Token
+    // ---------------- REFRESH TOKEN ----------------
+
     refreshToken: builder.mutation<
       RefreshTokenResponse,
       { refreshToken: string }
     >({
-      query: (data) => ({
+      query: (body) => ({
         url: AUTH_ENDPOINTS.REFRESH_TOKEN,
         method: "POST",
-        body: data,
+        body,
       }),
-      transformResponse: (response: {
-        success: boolean;
-        data: RefreshTokenResponse;
-      }) => response.data,
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          tokenService.setTokens(data.accessToken, data.refreshToken);
-
-          // Update Redux state
-          const user = tokenService.getUser();
-          if (user) {
-            dispatch(
-              setCredentials({
-                user,
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken,
-              }),
-            );
-          }
-        } catch (error) {
-          console.error("Token refresh failed:", error);
-        }
-      },
     }),
   }),
+
+  overrideExisting: false,
 });
 
-// Export hooks
 export const {
   useLoginMutation,
   useRegisterMutation,

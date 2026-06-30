@@ -1,59 +1,72 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+
+import { Button } from "@/components/ui/button";
 import { useToastContext } from "@/providers/toast/useToastContext";
-import { Button } from "@/shared/components";
-import { OAUTH_PROVIDERS } from "@/features/auth/constants/auth.constants";
-import type { OAuthProvider } from "@/features/auth/types/auth.types";
 
-export const SocialLogin = () => {
+type OAuthProvider = "google" | "github";
+
+const PROVIDERS = [
+  {
+    id: "google",
+    label: "Continue with Google",
+    icon: FcGoogle,
+  },
+  {
+    id: "github",
+    label: "Continue with GitHub",
+    icon: FaGithub,
+  },
+] as const;
+
+export function SocialLogin() {
   const { showToast } = useToastContext();
-  const [isLoading, setIsLoading] = useState<OAuthProvider | null>(null);
-  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
 
-  const handleOAuthLogin = (provider: OAuthProvider) => {
-    setIsLoading(provider);
+  const [loadingProvider, setLoadingProvider] = useState<OAuthProvider | null>(
+    null,
+  );
+
+  const handleLogin = (provider: OAuthProvider) => {
     try {
-      // Build OAuth URL
-      const oauthUrl = `/api/v1/auth/oauth/${provider}`;
-      setRedirectUrl(oauthUrl); // store in state instead of mutating window.location directly
+      setLoadingProvider(provider);
+
+      window.location.assign(`/api/v1/auth/oauth/${provider}`);
     } catch {
-      showToast(`Failed to login with ${provider}`, "error");
-      setIsLoading(null);
+      setLoadingProvider(null);
+
+      showToast(
+        `Unable to continue with ${provider}. Please try again.`,
+        "error",
+      );
     }
   };
 
-  // Effect to perform redirect
-  useEffect(() => {
-    if (redirectUrl) {
-      window.location.assign(redirectUrl); // safe way to redirect
-    }
-  }, [redirectUrl]);
-
   return (
-    <div className="space-y-3">
-      {Object.entries(OAUTH_PROVIDERS).map(([key, provider]) => {
-        const providerKey = key.toLowerCase() as OAuthProvider;
-        return (
-          <Button
-            key={key}
-            type="button"
-            variant="outline"
-            onClick={() => handleOAuthLogin(providerKey)}
-            disabled={isLoading !== null}
-            className={`w-full ${provider.color} ${provider.textColor}`}
-          >
-            {isLoading === providerKey ? (
-              <span className="flex items-center">
-                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></span>
-                Connecting...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center">
-                <span className="mr-2">{provider.name}</span>
-              </span>
-            )}
-          </Button>
-        );
-      })}
+    <div className="grid gap-3">
+      {PROVIDERS.map(({ id, label, icon: Icon }) => (
+        <Button
+          key={id}
+          type="button"
+          variant="outline"
+          className="h-11 justify-center gap-3"
+          disabled={loadingProvider !== null}
+          onClick={() => handleLogin(id)}
+        >
+          {loadingProvider === id ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Connecting...
+            </>
+          ) : (
+            <>
+              <Icon className="size-5" />
+              {label}
+            </>
+          )}
+        </Button>
+      ))}
     </div>
   );
-};
+}

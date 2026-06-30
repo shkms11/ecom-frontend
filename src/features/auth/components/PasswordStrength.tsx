@@ -1,48 +1,51 @@
-import { useMemo } from "react";
 import { calculatePasswordStrength } from "@/features/auth/utils";
-import { PASSWORD_STRENGTH_CONFIG } from "@/features/auth/constants/auth.constants";
 
 interface PasswordStrengthProps {
   password: string;
 }
 
-export const PasswordStrength: React.FC<PasswordStrengthProps> = ({
-  password,
-}) => {
-  const strength = useMemo(
-    () => calculatePasswordStrength(password),
-    [password],
-  );
+const BAR_COLORS = [
+  "bg-destructive",
+  "bg-destructive",
+  "bg-orange-500",
+  "bg-yellow-500",
+  "bg-primary",
+  "bg-green-500",
+] as const;
 
-  const config = useMemo(() => {
-    if (strength.score <= 1) return PASSWORD_STRENGTH_CONFIG.WEAK;
-    if (strength.score === 2) return PASSWORD_STRENGTH_CONFIG.FAIR;
-    if (strength.score === 3) return PASSWORD_STRENGTH_CONFIG.GOOD;
-    if (strength.score === 4) return PASSWORD_STRENGTH_CONFIG.STRONG;
-    return PASSWORD_STRENGTH_CONFIG.VERY_STRONG;
-  }, [strength.score]);
+export function PasswordStrength({ password }: PasswordStrengthProps) {
+  const strength = calculatePasswordStrength(password);
+
+  if (!password) return null;
 
   return (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-1">
-        <span className={`text-xs font-medium ${config.textColor}`}>
-          {config.label}
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-medium text-muted-foreground">
+          {strength.feedback}
         </span>
-        <span className="text-xs text-gray-500">{strength.score}/5</span>
+
+        <span className="text-muted-foreground">{strength.score}/5</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
+
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
         <div
-          className={`h-2 rounded-full transition-all duration-300 ${config.color}`}
-          style={{ width: `${(strength.score / 5) * 100}%` }}
-        ></div>
+          className={`h-full transition-all duration-300 ${
+            BAR_COLORS[strength.score]
+          }`}
+          style={{
+            width: `${strength.score * 20}%`,
+          }}
+        />
       </div>
+
       {strength.suggestions.length > 0 && (
-        <ul className="mt-2 text-xs text-gray-600 space-y-1">
-          {strength.suggestions.map((suggestion, index) => (
-            <li key={index}>• {suggestion}</li>
+        <ul className="space-y-1 text-xs text-muted-foreground">
+          {strength.suggestions.map((suggestion) => (
+            <li key={suggestion}>• {suggestion}</li>
           ))}
         </ul>
       )}
     </div>
   );
-};
+}
