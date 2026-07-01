@@ -1,24 +1,17 @@
-import { memo, useState, useCallback, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Funnel, PackageSearch } from "lucide-react";
 
-import { ProductCard } from "../components/ProductCard";
 import type { ProductSummary } from "@/features/products/types/product.types";
 import { SHOP_PRODUCTS } from "@/features/products/data/mockProducts";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { ProductCard } from "../components/ProductCard";
+import ProductFilters from "../components/ProductFilters";
+import ProductToolbar from "../components/ProductToolbar";
+import ProductPagination from "../components/ProductPagination";
+import EmptyProducts from "../components/EmptyProducts";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
   Sheet,
@@ -31,237 +24,128 @@ type SortOption = "featured" | "newest" | "price-low" | "price-high";
 
 const ITEMS_PER_PAGE = 6;
 
-export default memo(function ShopAllProducts() {
+export default function AllProductsPage() {
   const navigate = useNavigate();
 
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [sort, setSort] = useState<SortOption>("featured");
-
-  const [shoeFilter, setShoeFilter] = useState(true);
-  const [clothingFilter, setClothingFilter] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
 
-  const resetPage = useCallback(() => setCurrentPage(1), []);
+  const [filters, setFilters] = useState({
+    shoes: true,
+    clothing: false,
+    sort: "featured" as SortOption,
+  });
 
-  const filteredProducts = useMemo(() => {
-    let products = [...SHOP_PRODUCTS];
+  const updateFilters = (values: Partial<typeof filters>) => {
+    setFilters((prev) => ({ ...prev, ...values }));
+    setCurrentPage(1);
+  };
 
-    if (shoeFilter && !clothingFilter) {
-      products = products.filter((p) => p.category === "shoes");
-    } else if (!shoeFilter && clothingFilter) {
-      products = products.filter((p) => p.category === "clothing");
+  const products = useMemo(() => {
+    let list = [...SHOP_PRODUCTS];
+
+    if (filters.shoes !== filters.clothing) {
+      list = list.filter(
+        (product) =>
+          product.category === (filters.shoes ? "shoes" : "clothing"),
+      );
     }
 
-    switch (sort) {
+    switch (filters.sort) {
       case "newest":
-        return [...products].reverse();
+        list.reverse();
+        break;
 
       case "price-low":
-        return [...products].sort((a, b) => a.price - b.price);
+        list.sort((a, b) => a.price - b.price);
+        break;
 
       case "price-high":
-        return [...products].sort((a, b) => b.price - a.price);
-
-      default:
-        return products;
+        list.sort((a, b) => b.price - a.price);
+        break;
     }
-  }, [sort, shoeFilter, clothingFilter]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    return list;
+  }, [filters]);
 
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return filteredProducts.slice(start, end);
-  }, [filteredProducts, currentPage]);
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
-  const handleAddToCart = useCallback((product: ProductSummary) => {
-    console.log("Add to cart:", product);
-  }, []);
-
-  const handleProductClick = useCallback(
-    (id: string | number) => {
-      navigate(`/shop/${id}`);
-    },
-    [navigate],
+  const visibleProducts = products.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
   );
 
-  const goToPage = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  };
+  const filterContent = (
+    <ProductFilters
+      shoeFilter={filters.shoes}
+      clothingFilter={filters.clothing}
+      onShoeChange={(checked) => updateFilters({ shoes: checked })}
+      onClothingChange={(checked) => updateFilters({ clothing: checked })}
+    />
+  );
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="mx-auto max-w-[1400px] px-4 py-8">
-        {/* HEADER */}
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Shop Collection</h1>
-            <p className="text-sm text-muted-foreground">
-              {filteredProducts.length} products available
-            </p>
-          </div>
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <ProductToolbar
+          totalProducts={products.length}
+          sort={filters.sort}
+          onSortChange={(sort) => updateFilters({ sort })}
+          onOpenFilters={() => setFiltersOpen(true)}
+        />
 
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              className="lg:hidden"
-              onClick={() => setFiltersOpen(true)}
-            >
-              <Funnel className="mr-2 h-4 w-4" />
-              Filters
-            </Button>
+        <Separator className="mb-8" />
 
-            <Select
-              value={sort}
-              onValueChange={(v) => {
-                setSort(v as SortOption);
-                resetPage();
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort products" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="price-low">Low → High</SelectItem>
-                <SelectItem value="price-high">High → Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Separator className="mb-6" />
-
-        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-          {/* SIDEBAR */}
+        <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+          {/* Desktop Filters */}
           <aside className="hidden lg:block">
-            <Card>
+            <Card className="sticky top-24">
               <CardHeader>
                 <CardTitle>Filters</CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-5">
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    checked={shoeFilter}
-                    onCheckedChange={(v) => {
-                      setShoeFilter(Boolean(v));
-                      resetPage();
-                    }}
-                  />
-                  <span>Shoes</span>
-                  {shoeFilter && <Badge>Active</Badge>}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    checked={clothingFilter}
-                    onCheckedChange={(v) => {
-                      setClothingFilter(Boolean(v));
-                      resetPage();
-                    }}
-                  />
-                  <span>Clothing</span>
-                  {clothingFilter && <Badge>Active</Badge>}
-                </div>
-              </CardContent>
+              <CardContent>{filterContent}</CardContent>
             </Card>
           </aside>
 
-          {/* PRODUCTS */}
+          {/* Products */}
           <section>
-            {paginatedProducts.length === 0 ? (
-              <Card className="py-20 text-center">
-                <PackageSearch className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-                <p>No products found.</p>
-              </Card>
-            ) : (
+            {visibleProducts.length ? (
               <>
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                  {paginatedProducts.map((product) => (
+                  {visibleProducts.map((product) => (
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={handleAddToCart}
-                      onClick={() => handleProductClick(product.id)}
+                      onAddToCart={console.log}
+                      onClick={() => navigate(`/shop/${product.id}`)}
                     />
                   ))}
                 </div>
 
-                {/* PAGINATION */}
-                <div className="mt-10 flex justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => goToPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <Button
-                      key={i}
-                      size="icon"
-                      variant={currentPage === i + 1 ? "default" : "outline"}
-                      onClick={() => goToPage(i + 1)}
-                    >
-                      {i + 1}
-                    </Button>
-                  ))}
-
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => goToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
+                <ProductPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
               </>
+            ) : (
+              <EmptyProducts />
             )}
           </section>
         </div>
       </div>
 
-      {/* MOBILE FILTERS */}
+      {/* Mobile Filters */}
       <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent side="left">
+        <SheetContent side="left" className="w-80">
           <SheetHeader>
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <Checkbox
-                checked={shoeFilter}
-                onCheckedChange={(v) => {
-                  setShoeFilter(Boolean(v));
-                  resetPage();
-                }}
-              />
-              Shoes
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Checkbox
-                checked={clothingFilter}
-                onCheckedChange={(v) => {
-                  setClothingFilter(Boolean(v));
-                  resetPage();
-                }}
-              />
-              Clothing
-            </div>
-          </div>
+          <div className="mt-6">{filterContent}</div>
         </SheetContent>
       </Sheet>
     </div>
   );
-});
+}

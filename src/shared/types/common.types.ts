@@ -42,44 +42,6 @@ export interface Meta {
 }
 
 /* ---------------------------------- */
-/* API response types */
-/* ---------------------------------- */
-
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  message: string;
-  data: T;
-  timestamp?: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}
-
-export interface ApiErrorResponse {
-  success: false;
-  message: string;
-  errors?: FieldError[];
-  statusCode: number;
-  timestamp?: string;
-}
-
-export interface FieldError {
-  field: string;
-  message: string;
-  value?: string | number | boolean;
-}
-
-/* ---------------------------------- */
 /* Async state */
 /* ---------------------------------- */
 
@@ -87,45 +49,6 @@ export interface AsyncState<T = unknown> {
   loading: LoadingState;
   error: string | null;
   data: T | null;
-}
-
-/* ---------------------------------- */
-/* Query/filter types */
-/* ---------------------------------- */
-
-export type FilterOperator =
-  | "eq"
-  | "ne"
-  | "gt"
-  | "gte"
-  | "lt"
-  | "lte"
-  | "in"
-  | "nin"
-  | "like"
-  | "between";
-
-export interface Filter {
-  field: string;
-  operator: FilterOperator;
-  value: string | number | boolean | string[] | number[];
-}
-
-export interface Sort {
-  field: string;
-  order: SortOrder;
-}
-
-export interface QueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  filters?: Filter[];
-  sort?: Sort[];
-
-  category?: string;
-  price_min?: number;
-  price_max?: number;
 }
 
 /* ---------------------------------- */
@@ -161,14 +84,10 @@ export interface FormState<
 }
 
 /* ---------------------------------- */
-/* Cart shared */
+/* Currency */
 /* ---------------------------------- */
 
-export interface CartSummary {
-  items: number;
-  subtotal: number;
-  discount: number;
-  tax: number;
-  shipping: number;
-  total: number;
-}
+export type CurrencyCode =
+  | "USD" // US Dollar
+  | "EUR" // Euro
+  | "BDT"; // Bangladeshi Taka

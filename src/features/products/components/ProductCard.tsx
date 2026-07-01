@@ -1,15 +1,11 @@
-import React from "react";
+import { Star } from "lucide-react";
+
 import type { ProductSummary } from "@/features/products/types/product.types";
 import { formatCurrency } from "@/shared/utils";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -17,69 +13,85 @@ interface ProductCardProps {
   onClick?: () => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+const FALLBACK_IMAGE = "/fallback-product.jpg";
+
+export function ProductCard({
   product,
   onAddToCart,
   onClick,
-}) => {
-  const { name, price, rating, images, category, stockStatus } = product;
+}: ProductCardProps) {
+  const {
+    name,
+    price,
+    rating = 0,
+    images = [],
+    category,
+    stockStatus,
+  } = product;
 
-  const formattedStockStatus = stockStatus?.replace(/_/g, " ") ?? "unknown";
+  const image = images[0] ?? FALLBACK_IMAGE;
+  const stockLabel = stockStatus?.replace(/_/g, " ") ?? "Unknown";
+  const inStock = stockStatus === "IN_STOCK";
 
   return (
     <Card
       onClick={onClick}
-      className="group cursor-pointer overflow-hidden transition-all hover:shadow-md"
+      className="group cursor-pointer overflow-hidden border border-border transition-colors duration-200 hover:border-orange-200"
     >
       {/* Image */}
-      <div className="relative h-48 w-full overflow-hidden bg-muted">
+      <div className="relative h-48 overflow-hidden bg-muted">
         <img
-          src={images[0] ?? "/fallback-product.jpg"}
+          src={image}
           alt={name}
+          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
-      {/* Header */}
-      <CardHeader className="space-y-2">
+      {/* Content */}
+      <CardHeader className="space-y-3 p-4 pb-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-1 text-base font-semibold">{name}</h3>
+          {category && (
+            <Badge variant="secondary" className="capitalize">
+              {category}
+            </Badge>
+          )}
 
-          <Badge variant="secondary" className="text-xs">
-            {category}
+          <Badge
+            variant={inStock ? "outline" : "destructive"}
+            className="text-[10px]"
+          >
+            {stockLabel}
           </Badge>
         </div>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="text-yellow-500">
-            {"★".repeat(Math.floor(rating))}
-            {"☆".repeat(5 - Math.floor(rating))}
-          </span>
+        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground">
+          {name}
+        </h3>
+
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Star className="h-4 w-4 fill-orange-500 text-orange-500" size={16} />
+          <span>{rating.toFixed(1)}</span>
         </div>
-
-        {/* Stock */}
-
-        <p className="text-xs text-muted-foreground">{formattedStockStatus}</p>
       </CardHeader>
 
-      {/* Optional content area */}
-      <CardContent />
-
       {/* Footer */}
-      <CardFooter className="flex items-center justify-between">
-        <span className="text-lg font-bold">{formatCurrency(price)}</span>
+      <CardFooter className="flex items-center justify-between p-4 pt-4 border-t border-border">
+        <span className="text-base font-semibold text-foreground">
+          {formatCurrency(price)}
+        </span>
 
         <Button
           size="sm"
+          className="h-9 px-4"
           onClick={(e) => {
             e.stopPropagation();
             onAddToCart?.(product);
           }}
         >
-          Add to cart
+          Add to Cart
         </Button>
       </CardFooter>
     </Card>
   );
-};
+}

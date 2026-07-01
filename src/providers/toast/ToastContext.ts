@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import type { ToastType } from "@/shared/hooks/useToast";
-import type { useToast } from "@/shared/hooks/useToast";
+import type { ToastType } from "@/hooks/useToast";
+import type { useToast } from "@/hooks/useToast";
 
 export interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;

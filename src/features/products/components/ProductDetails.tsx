@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
+
 import type { Product } from "@/features/products/types/product.types";
 import { formatCurrency } from "@/shared/utils";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,16 +14,17 @@ interface ProductDetailsProps {
   onAddToCart?: (product: Product) => void;
 }
 
+const SIZES = ["S", "M", "L", "XL"];
+const FALLBACK_IMAGE = "/fallback-product.jpg";
+
 export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
   const [selectedImage, setSelectedImage] = useState(
-    product.images?.[0] ?? "/fallback-product.jpg",
+    product.images?.[0] ?? FALLBACK_IMAGE,
   );
-
-  const rating = product.rating ?? 0;
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-      {/* LEFT SIDE */}
+      {/* Images */}
       <section className="space-y-4">
         <Card className="overflow-hidden">
           <CardContent className="p-0">
@@ -30,25 +32,24 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
               <img
                 src={selectedImage}
                 alt={product.name}
-                className="h-full w-full object-contain bg-white"
+                className="h-full w-full bg-white object-contain"
               />
             </div>
           </CardContent>
         </Card>
 
-        {/* thumbnails */}
         <div className="grid grid-cols-4 gap-3">
-          {(product.images ?? []).slice(0, 4).map((img, i) => (
+          {(product.images ?? []).slice(0, 4).map((image, index) => (
             <button
-              key={i}
-              onClick={() => setSelectedImage(img)}
+              key={image}
+              onClick={() => setSelectedImage(image)}
               className="overflow-hidden rounded-lg border hover:border-primary"
             >
               <div className="aspect-square bg-muted">
                 <img
-                  src={img}
-                  alt={`${product.name} ${i + 1}`}
-                  className="h-full w-full object-contain bg-white"
+                  src={image}
+                  alt={`${product.name} ${index + 1}`}
+                  className="h-full w-full bg-white object-contain"
                 />
               </div>
             </button>
@@ -56,14 +57,12 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
         </div>
       </section>
 
-      {/* RIGHT SIDE */}
+      {/* Details */}
       <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-        {/* category */}
         {product.category && (
           <Badge variant="secondary">{product.category}</Badge>
         )}
 
-        {/* title */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
 
@@ -72,11 +71,10 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
           )}
         </div>
 
-        {/* rating */}
         <div className="flex items-center gap-3">
           <span className="text-yellow-500">
-            {"★".repeat(Math.floor(rating))}
-            {"☆".repeat(5 - Math.floor(rating))}
+            {"★".repeat(Math.floor(product.rating ?? 0))}
+            {"☆".repeat(5 - Math.floor(product.rating ?? 0))}
           </span>
 
           <span className="text-sm text-muted-foreground">
@@ -84,22 +82,21 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
           </span>
         </div>
 
-        {/* price */}
-        <div className="space-y-1">
+        <div>
           <p className="text-3xl font-semibold">
             {formatCurrency(product.price)}
           </p>
+
           <p className="text-sm text-muted-foreground">Tax included.</p>
         </div>
 
         <Separator />
 
-        {/* size (static for now) */}
         <div className="space-y-3">
           <p className="text-sm font-medium">Select size</p>
 
           <div className="flex flex-wrap gap-2">
-            {["S", "M", "L", "XL"].map((size) => (
+            {SIZES.map((size) => (
               <Button key={size} variant="outline" size="sm">
                 {size}
               </Button>
@@ -107,7 +104,6 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
           </div>
         </div>
 
-        {/* CTA */}
         <div className="space-y-3">
           <Button
             size="lg"
@@ -122,7 +118,6 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
           </Button>
         </div>
 
-        {/* perks */}
         <Card>
           <CardContent className="space-y-2 p-4 text-sm text-muted-foreground">
             <p>✓ Free shipping over $100</p>
@@ -131,7 +126,6 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
           </CardContent>
         </Card>
 
-        {/* tabs */}
         <Tabs defaultValue="details">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="details">Details</TabsTrigger>
@@ -148,10 +142,10 @@ export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
 
           <TabsContent
             value="specs"
-            className="mt-4 text-sm text-muted-foreground"
+            className="mt-4 space-y-1 text-sm text-muted-foreground"
           >
-            <div>Category: {product.category}</div>
-            <div>ID: {product.id}</div>
+            <p>Category: {product.category}</p>
+            <p>ID: {product.id}</p>
           </TabsContent>
 
           <TabsContent

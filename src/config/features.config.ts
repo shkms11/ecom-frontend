@@ -1,0 +1,7 @@
+export const FEATURE_FLAGS = {
+  ENABLE_OAUTH: true,
+  ENABLE_TWO_FACTOR: false,
+  ENABLE_SOCIAL_LOGIN: true,
+  ENABLE_EMAIL_VERIFICATION: true,
+  ENABLE_PASSWORD_RESET: true,
+} as const;

@@ -11,13 +11,7 @@ export const STORE_CONFIG = {
 
     ctaText: "Shop Now",
     ctaLink: "/shop",
-
-    bgColor: "bg-orange-500",
-    textColor: "text-white",
-    textSize: "text-sm",
-    padding: "py-2 px-4",
   },
-
   // --- Currency & Locale ---
   currency: "BDT" as CurrencyCode,
   locale: "en-BD",

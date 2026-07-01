@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { ToastContext } from "./ToastContext";
-import { useToast } from "@/shared/hooks/useToast";
+import { useToast } from "@/hooks/useToast";
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const { toasts, showToast, removeToast } = useToast();

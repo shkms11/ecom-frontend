@@ -1,4 +1,4 @@
-import type { Toast as ToastType } from "@/shared/hooks/useToast";
+import type { Toast as ToastType } from "@/hooks/useToast";
 interface ToastItemProps {
   toast: ToastType;
   onClose: (id: string) => void;
