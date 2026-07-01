@@ -1,117 +1,116 @@
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForgotPasswordMutation } from "@/features/auth/api/authApi";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+
+import { useAuth } from "@/features/auth/hooks";
 import { useToastContext } from "@/providers/toast/useToastContext";
-import { validateForgotPasswordForm } from "@/features/auth/utils";
-import { Input, Button } from "@/shared/components";
+
 import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/features/auth/constants/auth.constants";
 
-export const ForgotPasswordForm = () => {
-  const navigate = useNavigate();
-  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+
+type ForgotPasswordFormValues = {
+  email: string;
+};
+
+export function ForgotPasswordForm() {
+  const { forgotPassword, isSendingResetLink } = useAuth();
   const { showToast } = useToastContext();
 
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormValues>({
+    defaultValues: {
+      email: "",
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    if (emailError) setEmailError("");
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    const validation = validateForgotPasswordForm(email);
-    if (!validation.isValid) {
-      setEmailError(Object.values(validation.errors)[0] || "");
-      return;
-    }
-
+  async function onSubmit(data: ForgotPasswordFormValues) {
     try {
-      await forgotPassword({ email: email.trim() }).unwrap();
-      setIsSubmitted(true);
-      showToast(SUCCESS_MESSAGES.PASSWORD_RESET_EMAIL_SENT, "success");
-    } catch (err: unknown) {
-      let errorMessage: string = ERROR_MESSAGES.SERVER_ERROR;
+      await forgotPassword(data.email);
 
-      if (err && typeof err === "object" && err !== null) {
-        if ("data" in err) {
-          const data = (err as { data?: { message?: string } }).data;
-          if (typeof data?.message === "string") {
-            errorMessage = data.message;
-          }
-        } else if (
-          "message" in err &&
-          typeof (err as { message: unknown }).message === "string"
-        ) {
-          errorMessage = (err as { message: string }).message;
-        }
-      }
-
-      showToast(errorMessage, "error");
+      showToast(SUCCESS_MESSAGES.RESET_LINK_SENT, "success");
+    } catch (err: any) {
+      showToast(
+        err?.data?.message ?? err?.message ?? ERROR_MESSAGES.SERVER_ERROR,
+        "error",
+      );
     }
-  };
-
-  if (isSubmitted) {
-    return (
-      <div className="w-full max-w-md space-y-6 text-center">
-        <div className="rounded-md bg-green-50 p-4">
-          <div className="text-sm text-green-800">
-            {SUCCESS_MESSAGES.PASSWORD_RESET_EMAIL_SENT}
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600">
-          Please check your email for the password reset link.
-        </p>
-
-        <Button onClick={() => navigate("/login")} className="w-full">
-          Back to Login
-        </Button>
-      </div>
-    );
   }
 
   return (
-    <div className="w-full max-w-md space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900">Forgot password?</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Enter your email address and we'll send you a link to reset your
-          password.
+    <Card className="w-full max-w-md border border-border shadow-none">
+      {/* Header */}
+      <CardHeader className="space-y-2 text-center">
+        <CardTitle className="text-2xl font-semibold tracking-tight">
+          Forgot password
+        </CardTitle>
+
+        <CardDescription>
+          Enter your email and we’ll send you a reset link.
+        </CardDescription>
+
+        <p className="text-sm text-muted-foreground">
+          Remember your password?{" "}
+          <Link
+            to="/auth/login"
+            className="text-orange-600 hover:text-orange-700 font-medium"
+          >
+            Sign in
+          </Link>
         </p>
-      </div>
+      </CardHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          label="Email"
-          type="email"
-          name="email"
-          value={email}
-          onChange={handleChange}
-          error={emailError}
-          required
-          autoComplete="email"
-        />
+      {/* Form */}
+      <CardContent className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
 
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Sending..." : "Send reset link"}
-        </Button>
-      </form>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              autoComplete="email"
+              disabled={isSendingResetLink}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+\.\S+$/,
+                  message: "Enter a valid email",
+                },
+              })}
+            />
 
-      <div className="text-center">
-        <a
-          href="/login"
-          className="text-sm font-medium text-blue-600 hover:text-blue-500"
-        >
-          Back to login
-        </a>
-      </div>
-    </div>
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Submit */}
+          <Button
+            type="submit"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+            disabled={isSendingResetLink}
+          >
+            {isSendingResetLink ? "Sending reset link..." : "Send reset link"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
-};
+}
