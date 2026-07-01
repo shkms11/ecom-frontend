@@ -1,56 +1,28 @@
 import { memo } from "react";
-import clsx from "clsx";
 
 import { TRUST_ITEMS } from "../data/trustItems";
 
 export const TrustBar = memo(() => {
   return (
-    <section
-      className={clsx(
-        "py-12 lg:py-14",
-        "bg-gradient-to-b from-gray-50 to-gray-100", // simplified subtle gradient
-        "border-t border-b border-gray-200",
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-6">
-        <div
-          className={clsx(
-            "grid",
-            "grid-cols-2 sm:grid-cols-4",
-            "gap-8 lg:gap-12",
-            "text-center",
-          )}
-        >
+    <section className="border-y border-border bg-background">
+      <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-12">
           {TRUST_ITEMS.map(({ icon: Icon, title, subtitle }) => (
             <div
               key={`${title}-${subtitle}`}
-              className={clsx(
-                "group flex flex-col items-center",
-                "p-6 lg:p-8 rounded-2xl",
-                "bg-white shadow-md", // soft card shadow
-                "transition-transform duration-300",
-                "hover:-translate-y-1 hover:shadow-lg", // smooth hover
-              )}
+              className="flex flex-col items-center text-center gap-3"
             >
-              <div
-                className={clsx(
-                  "w-20 h-20 lg:w-24 lg:h-24 mb-6",
-                  "flex items-center justify-center rounded-xl",
-                  "bg-orange-50 text-orange-600",
-                  "transition-transform duration-300 group-hover:scale-110",
-                )}
-              >
-                <Icon
-                  className="w-12 h-12 lg:w-14 lg:h-14"
-                  aria-hidden="true"
-                />
+              {/* Icon */}
+              <div className="w-12 h-12 flex items-center justify-center text-orange-600">
+                <Icon className="w-6 h-6" aria-hidden="true" />
               </div>
 
-              <h3 className="text-xl lg:text-2xl font-semibold text-gray-900 mb-2">
+              {/* Content */}
+              <h3 className="text-base font-semibold text-foreground">
                 {title}
               </h3>
 
-              <p className="text-sm lg:text-base text-gray-500 uppercase tracking-wide">
+              <p className="text-sm text-muted-foreground uppercase tracking-wide">
                 {subtitle}
               </p>
             </div>

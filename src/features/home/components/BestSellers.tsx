@@ -1,33 +1,40 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+
 import { ProductCard } from "@/features/products";
 import { BEST_SELLER_ITEMS } from "@/features/products/data/mockBestSellers";
 
 export const BestSellers = memo(() => {
   return (
-    <section
-      className="py-24 px-6 bg-gradient-to-b from-gray-50/70 to-zinc-50/50"
-      aria-labelledby="bestsellers-heading"
-    >
-      <div className="max-w-6xl mx-auto">
-        <header className="flex justify-between items-center mb-16">
-          <h2
-            id="bestsellers-heading"
-            className="text-5xl font-bold bg-gradient-to-r from-gray-900 to-slate-900 bg-clip-text text-transparent"
-          >
-            Best Sellers
-          </h2>
+    <section className="border-t border-border bg-background py-16 lg:py-20">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <header className="flex items-end justify-between mb-10 lg:mb-12">
+          <div>
+            <h2
+              id="bestsellers-heading"
+              className="text-2xl lg:text-3xl font-semibold tracking-tight text-foreground"
+            >
+              Best Sellers
+            </h2>
+
+            <p className="text-sm text-muted-foreground mt-2">
+              Most loved picks from our runners
+            </p>
+          </div>
+
           <Link
             to="/shop"
-            className="text-orange-600 font-semibold text-lg hover:text-orange-700 flex items-center gap-2 group"
+            className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1 transition-colors"
           >
-            View All{" "}
-            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            View all
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </Link>
         </header>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {BEST_SELLER_ITEMS.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
