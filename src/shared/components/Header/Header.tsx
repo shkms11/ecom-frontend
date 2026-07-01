@@ -1,189 +1,62 @@
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { Menu, ShoppingCart, User } from "lucide-react";
-import { NavMenu } from "@/shared/components";
-import { SearchBar } from "@/shared/components";
-import { CategoriesContent } from "@/shared/components";
+import { useState } from "react";
+
 import { AnnouncementBar } from "./AnnouncementBar";
+import HeaderLogo from "./HeaderLogo";
+import HeaderNav from "./HeaderNav";
+import HeaderSearch from "./HeaderSearch";
+import HeaderActions from "./HeaderActions";
+import MobileMenu from "./MobileMenu";
 
-export const Header = () => {
+import { useHeaderScroll } from "@/hooks/useHeaderScroll";
+
+export function Header() {
+  const { showBar } = useHeaderScroll();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showBar, setShowBar] = useState(true);
-  const [categoriesOpen, setCategoriesOpen] = useState(false); // Desktop dropdown
-
-  const lastScrollY = useRef(0);
-  const ticking = useRef(false);
-
-  // Handle scroll show/hide and auto-close categories
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (Math.abs(currentScrollY - lastScrollY.current) < 10) return;
-
-      if (currentScrollY < 10) {
-        setShowBar(true);
-      } else if (currentScrollY > lastScrollY.current) {
-        // Scroll down → hide header and close categories
-        setShowBar(false);
-        setCategoriesOpen(false);
-      } else {
-        setShowBar(true);
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    const onScroll = () => {
-      if (!ticking.current) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking.current = false;
-        });
-        ticking.current = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close categories dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest("#categories-dropdown")) {
-        setCategoriesOpen(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
 
   return (
     <>
-      {/* Header Wrapper */}
       <div
-        className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-x-0 top-0 z-50 transition-transform duration-200 ${
           showBar ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        {/* Announcement Bar */}
         <AnnouncementBar />
 
-        {/* Main Header */}
-        <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
-            {/* Left - Logo */}
-            <div className="flex items-center gap-3 shrink-0">
-              <button
-                onClick={() => setMenuOpen(true)}
-                className="lg:hidden p-2 rounded-md hover:bg-orange-50"
-              >
-                <Menu size={22} />
-              </button>
-
-              <Link
-                to="/"
-                className="text-xl font-bold text-orange-600 hover:text-orange-700 whitespace-nowrap"
-              >
-                ShopFlow
-              </Link>
+        <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="mx-auto flex h-16 max-w-7xl items-center px-4">
+            {/* Mobile Left */}
+            <div className="flex flex-1 items-center lg:hidden">
+              <MobileMenu open={menuOpen} onOpenChange={setMenuOpen} />
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8 font-medium text-gray-700 shrink-0">
-              <Link className="hover:text-orange-600 transition-colors" to="/">
-                Home
-              </Link>
-              <Link
-                className="hover:text-orange-600 transition-colors"
-                to="/shop"
-              >
-                Shop
-              </Link>
+            {/* Desktop Left */}
+            <div className="hidden lg:flex items-center gap-8 shrink-0">
+              <HeaderLogo label="ShopFlow" />
+              <HeaderNav />
+            </div>
 
-              {/* Categories Dropdown */}
-              <div className="relative" id="categories-dropdown">
-                <button
-                  onClick={() => setCategoriesOpen((prev) => !prev)}
-                  className="flex items-center gap-1 hover:text-orange-600 transition-colors font-semibold"
-                >
-                  Categories
-                  <svg
-                    className={`w-4 h-4 transform transition-transform duration-200 ${
-                      categoriesOpen ? "rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {/* Mega Menu Content */}
-                <div
-                  className={`absolute left-0 mt-2 w-[700px] bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 z-50 ${
-                    categoriesOpen && showBar ? "max-h-[800px]" : "max-h-0"
-                  }`}
-                >
-                  <CategoriesContent />
-                </div>
+            {/* Center */}
+            <div className="flex flex-1 justify-center px-4">
+              {/* Mobile Logo */}
+              <div className="lg:hidden">
+                <HeaderLogo label="ShopFlow" />
               </div>
 
-              <Link
-                className="hover:text-orange-600 transition-colors"
-                to="/about"
-              >
-                About
-              </Link>
-              <Link
-                className="hover:text-orange-600 transition-colors"
-                to="/contact"
-              >
-                Contact
-              </Link>
-            </nav>
-
-            {/* Search - Flexible */}
-            <div className="flex-1 min-w-0 max-w-xl">
-              <SearchBar />
+              {/* Desktop Search */}
+              <div className="hidden w-full max-w-xl lg:block">
+                <HeaderSearch />
+              </div>
             </div>
 
-            {/* Right - Icons */}
-            <div className="flex items-center gap-4 shrink-0">
-              <Link
-                to="/cart"
-                className="relative p-2 hover:bg-orange-50 rounded transition-colors"
-              >
-                <ShoppingCart size={22} />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
-                  3
-                </span>
-              </Link>
-
-              <Link
-                to="/login"
-                className="p-2 hover:bg-orange-50 rounded transition-colors"
-              >
-                <User size={22} />
-              </Link>
+            {/* Right */}
+            <div className="flex flex-1 justify-end items-center">
+              <HeaderActions />
             </div>
           </div>
         </header>
       </div>
 
-      {/* Push page content down (adjust if header height changes) */}
       <div className="h-[104px]" />
-
-      {/* Mobile Drawer */}
-      <NavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
-};
+}

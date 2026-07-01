@@ -1,61 +1,54 @@
 import { useState } from "react";
+import { Truck, X } from "lucide-react";
+
 import { STORE_CONFIG } from "@/config/store.config";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
-import { X } from "lucide-react";
 
 export function AnnouncementBar() {
   const config = STORE_CONFIG.announcementBar;
 
-  const [isVisible, setIsVisible] = useState<boolean>(config?.enabled ?? false);
+  const [isVisible, setIsVisible] = useState(config?.enabled ?? false);
 
-  if (!config?.enabled || !isVisible) return null;
+  if (!config?.enabled || !isVisible) {
+    return null;
+  }
 
-  const {
-    message,
-    freeShippingThreshold,
-    bgColor,
-    textColor,
-    textSize,
-    padding,
-    ctaText,
-    ctaLink,
-  } = config;
-
-  const announcementMessage = message.replace(
+  const announcementMessage = config.message.replace(
     "{amount}",
-    formatCurrency(freeShippingThreshold),
+    formatCurrency(config.freeShippingThreshold),
   );
 
-  const handleClose = () => {
-    setIsVisible(false); // hide only for current render
-  };
-
   return (
-    <div
-      className={`${bgColor} ${textColor} ${textSize} ${padding} w-full`}
+    <section
       role="region"
       aria-label="Store announcement"
+      className="border-b border-orange-200 bg-orange-50"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 relative">
-        <span className="font-medium">{announcementMessage}</span>
+      <div className="relative mx-auto flex h-10 max-w-7xl items-center justify-center px-4">
+        <div className="flex items-center gap-2 text-sm text-orange-700">
+          <Truck className="h-4 w-4 shrink-0" aria-hidden="true" />
 
-        {ctaText && ctaLink && (
-          <a
-            href={ctaLink}
-            className="underline font-semibold hover:opacity-80"
-          >
-            {ctaText}
-          </a>
-        )}
+          <span>{announcementMessage}</span>
+
+          {config.ctaText && config.ctaLink && (
+            <a
+              href={config.ctaLink}
+              className="font-medium text-orange-600 transition-colors hover:text-orange-700 hover:underline"
+            >
+              {config.ctaText}
+            </a>
+          )}
+        </div>
 
         <button
-          onClick={handleClose}
-          className="absolute right-0 p-1 hover:opacity-70"
+          type="button"
+          onClick={() => setIsVisible(false)}
           aria-label="Close announcement"
+          className="absolute right-4 inline-flex h-7 w-7 items-center justify-center rounded-lg text-orange-500 transition-colors hover:bg-orange-100 hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
         >
-          <X size={16} />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-    </div>
+    </section>
   );
 }
